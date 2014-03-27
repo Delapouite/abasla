@@ -1,53 +1,86 @@
-hierarchy = ['continent' 'country' 'city']
+citiesHierarchy = ['continent' 'country' 'city']
 cities = {
 	'Africa': {
 		'Egypt': [
-			'Cairo',
+			'Cairo'
 			'Alexandria'
 		],
 		'Morocco': [
-			'Rabbat',
+			'Rabbat'
 			'Casablanca'
 		]
-	},
+	}
 	'America': {
 		'Canada': [
-			'Montreal',
+			'Montreal'
 			'Toronto'
-		],
+		]
 		'Chile': [
 			'Santiago'
-		],
+		]
 		'Colombia': [
-			'Bogota',
+			'Bogota'
 			'Cali'
 		]
-	},
+	}
 	'Europe': {
 		'England': [
-			'London',
-			'Manchester',
 			'Liverpool'
+			'London'
+			'Manchester'
 		]
 	}
 }
 
-abasla = (hierarchy, tree) ->
+foods = {
+	'red': [
+		{
+			name: 'strawberry'
+			type: 'fruit'
+		}
+		{
+			name: 'tomato'
+			type: 'fruit'
+		}
+	]
+	'green': [
+		{
+			name: 'pie'
+			type: 'veggie'
+		}
+		{
+			name: 'bean'
+			type: 'veggie'
+		}
+	]
+}
+
+abasla = (hierarchy, tree, opts = {}) ->
+	# result
 	flat = []
+
+	tip = hierarchy.length - 1
+	tip++ if opts.mergeLeaf
+
 	walk = (nodes, depth = 0, ancestors = {}) !->
 		key = hierarchy[depth]
 		# build ancestors
-		if depth < hierarchy.length - 1
+		if depth < tip
 			for own ancestor, children of nodes
 				ancestors[key] = ancestor
 				walk children, depth + 1, ancestors
 		# leaf
 		else
 			for leaf in nodes
-				obj = {"#key": leaf}
+				obj = if opts.mergeLeaf then leaf else {"#key": leaf}
 				flat.push obj <<< ancestors
 
 	walk tree
 	flat
 
-console.log abasla hierarchy, cities
+console.log 'Cities'
+console.log abasla citiesHierarchy, cities
+console.log 'Foods'
+console.log abasla ['color' 'food'], foods
+console.log 'Merged foods'
+console.log abasla ['color'], foods, mergeLeaf: true
